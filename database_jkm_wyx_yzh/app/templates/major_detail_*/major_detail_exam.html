@@ -1,0 +1,48 @@
+{% extends 'major_detail_*/major_detail_info.html' %}
+
+{% block major_detail %}
+    <div class="tabs">
+        <ul>
+            <li>
+                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/">
+                    录取信息
+                </a>
+            </li>
+            <li>
+                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/analyze/">
+                    分数分析
+                </a>
+            </li>
+            <li class="is-active">
+                <a href="">
+                    初试考试范围
+                </a>
+            </li>
+            <li>
+                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/post/">
+                    相关帖子
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="table-container is-center">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style="width: 1100px;">
+            <thead>
+            <tr>
+                <th><abbr title="学院名称">专业课1</abbr></th>
+                <th><abbr title="专业名称">专业课2</abbr></th>
+                <th><abbr title="专业代码">英语</abbr></th>
+                <th><abbr title="复试成绩">政治</abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ exam_info.professional_exam1 }}</td>
+                <td>{{ exam_info.professional_exam2 }}</td>
+                <td>{{ exam_info.english_exam }}</td>
+                <td>{{ exam_info.politic_exam }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'major_detail_*/major_detail_info.html' %}
+{% load static %}
+
+{% block major_detail %}
+    <div class="tabs">
+        <ul>
+            <li>
+                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/">
+                    录取信息
+                </a>
+            </li>
+            <li class="is-active">
+                <a href="">
+                    分数分析
+                </a>
+            </li>
+            <li>
+                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/exam/">
+                    初试考试范围
+                </a>
+            </li>
+            <li>
+                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/post/">
+                    相关帖子
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="columns">
+            <div class="column is-6">
+                <div id="min-score1" style="width: 500px;height:400px;"></div>
+            </div>
+            <div class="column is-6">
+                <div id="min-score2" style="width: 500px;height:400px;"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            initBar1();
+            initBar2();
+        })
+
+        function initBar1() {
+            let minScore = echarts.init(document.getElementById('min-score1'));
+            const option = {
+                title: {
+                    text: '初试录取分数线（最近五年)',
+                    textAlign: 'auto',
+                    left: 'center'
+                },
+                legend: {
+                    data: ['score']
+                },
+                xAxis: {
+                    data: []
+                },
+                yAxis: {},
+                series: []
+            };
+
+            $.ajax({
+                url: '/major/{{ university.university_id }}/{{ major.major_id }}/detail/analyze/bar/',
+                type: 'get',
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        option.xAxis.data = res.data.x_axis
+                        option.series = res.data.series_list1
+                    }
+                    minScore.setOption(option)
+                }
+            })
+        }
+
+        function initBar2() {
+            let minScore = echarts.init(document.getElementById('min-score2'));
+            const option = {
+                title: {
+                    text: '总分录取分数线（最近五年)',
+                    textAlign: 'auto',
+                    left: 'center'
+                },
+                legend: {
+                    data: ['score']
+                },
+                xAxis: {
+                    data: []
+                },
+                yAxis: {},
+                series: []
+            };
+
+            $.ajax({
+                url: '/major/{{ university.university_id }}/{{ major.major_id }}/detail/analyze/bar/',
+                type: 'get',
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        option.xAxis.data = res.data.x_axis
+                        option.series = res.data.series_list2
+                    }
+                    minScore.setOption(option)
+                }
+            })
+        }
+    </script>
+
+{% endblock %}

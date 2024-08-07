@@ -1,0 +1,154 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block style %}
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <section>
+        <div class="container">
+            <div class="columns">
+                <div class="column is-12">
+                    <div class="box is-radiusless is-shadowless">
+                        <div class="tabs">
+                            <ul>
+                                <li class="is-active"><a>专业信息</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="columns is-mobile" style="border-bottom: #ededed solid 1px; padding-bottom: 1rem">
+                            <div class="column is-narrow">
+                                <figure class="image is-96x96">
+                                    <img src="{{ university.image.url }}" alt="">
+                                </figure>
+                            </div>
+                            <div class="column is-narrow">
+                                <div>
+                                    <h1 class="title is-size-4">{{ university.name }}</h1>
+                                </div>
+                                <div style="padding-top: 5px">
+                                    <span class="is-size-6 has-text-grey">学院：{{ school }}</span>
+                                </div>
+                                <div style="padding-top: 5px">
+                                    <span class="is-size-6 has-text-grey">{{ university.location }}</span>
+                                </div>
+                                <div style="padding-top: 5px">
+                                    <span class="is-size-6 has-text-grey">联系方式：{{ university.info }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="columns" style="padding: 1rem 0;">
+                            <div class="column">
+                                {% block major_detail %}
+                                    <div class="tabs">
+                                        <ul>
+                                            <li class="is-active">
+                                                <a href="">
+                                                    录取信息
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/analyze/">
+                                                    分数分析
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/exam/">
+                                                    初试考试范围
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/post/">
+                                                    相关帖子
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="is-hoverable is-size-7 dropdown" style="margin-bottom: 10px">
+                                        <div class="dropdown-trigger">
+                                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                <span>选择年份</span>
+                                                <span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                            <div class="dropdown-content" id="year-list">
+                                                {% for year in years %}
+                                                    <a data-type="{{ year }}"
+                                                       class="dropdown-item is-hoverable selectYear">
+                                                        {{ year }}
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-container is-center">
+                                        <table class="table is-hoverable" style="width: 1100px;">
+                                            <thead>
+                                            <tr>
+                                                <th><abbr title="学院名称">年份</abbr></th>
+                                                <th><abbr title="专业名称">专业名称</abbr></th>
+                                                <th><abbr title="专业代码">初试成绩</abbr></th>
+                                                <th><abbr title="复试成绩">复试成绩</abbr></th>
+                                                <th><abbr title="复试成绩">总成绩</abbr></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for item in query_set %}
+                                                <tr class="info" data-type="{{ item.year }}">
+                                                    <td>{{ item.year }}</td>
+                                                    <td>{{ major.major_name }}</td>
+                                                    <td>{{ item.score1 }}</td>
+                                                    <td>{{ item.score2 }}</td>
+                                                    <td>{{ item.total_score }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('.selectYear');
+            rows.forEach(row => {
+                row.addEventListener('click', () => {
+                    rows.forEach(r => {
+                        r.classList.remove("is-active");
+                    });
+                    row.classList.add("is-active");
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#year-list a").click(function () {
+                const type = $(this).data('type');
+                $(".info").addClass('hidden');
+                $(".info[data-type='" + type + "']").removeClass('hidden');
+            });
+        });
+    </script>
+
+{% endblock %}

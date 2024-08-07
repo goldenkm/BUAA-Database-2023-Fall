@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+{% load static global_template %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8">
+                    {% block section %}
+                        {% if posts %}
+                            {% for post in posts %}
+                                <div class="box">
+                                    <h1 class="is-size-5 has-text-weight-bold">
+                                        <a href="/post/{{ post.id }}/detail/">{{ post.title }}</a>
+                                    </h1>
+                                    <div class="is-size-7 has-text-grey-light pt-1 pb-1">
+                                        <span class="mr-3">作者：{{ post.author.user_name }}</span>
+                                        <span>发布日期：{{ post.create_time }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="box">
+                                文章不存在！
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+                <div class="column is-4">
+                    {% block right %}
+                        {% get_sidebar_list as sidebar_list %}
+                        {% for sidebar in sidebar_list %}
+                            <div class="box">
+                                <h1 class="is-size-5">{{ sidebar.title }}</h1>
+                                <p>{{ sidebar.get_content }}</p>
+                            </div>
+                        {% endfor %}
+
+
+                    {% endblock %}
+                </div>
+            </div>
+
+            {% block footer %}
+                <footer class="footer container">
+                    <div class=" has-text-centered">
+                        已经到底部啦
+                    </div>
+                </footer>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}

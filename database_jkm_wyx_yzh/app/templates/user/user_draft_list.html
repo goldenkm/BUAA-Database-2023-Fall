@@ -1,0 +1,26 @@
+{% extends 'user/user_profile.html' %}
+
+{% block title %}
+    <li class="is-active"><a>我的草稿</a></li>
+{% endblock %}
+
+{% block profile_content %}
+    {% if drafts %}
+        {% for draft in drafts %}
+            <div class="box">
+                <div style="display: inline-block; width: 800px">
+                    <h1 class="is-size-5 has-text-weight-bold">
+                        <a href="/post/create_from/draft/{{ draft.id }}">{{ draft.title }}</a>
+                    </h1>
+                    <span class="is-size-7 has-text-grey-light pt-1 pb-1">
+                        <span>发布日期：{{ draft.create_time }}</span>
+                    </span>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="box">
+            当前暂无草稿！
+        </div>
+    {% endif %}
+{% endblock %}

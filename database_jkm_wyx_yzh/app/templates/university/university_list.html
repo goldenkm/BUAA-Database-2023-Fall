@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div style="float: left; width: 300px; margin-left: 60px; margin-top: 20px">
+        <form action="" method="get">
+            {% csrf_token %}
+            <div class="field has-addons">
+                <div class="control is-expanded">
+                    <input type="search" class="input" name="keyword" placeholder="Search" value="{{ keyword }}">
+                </div>
+                <div class="control">
+                    <input class="button is-primary" type="submit" value="搜索">
+                </div>
+            </div>
+        </form>
+    </div>
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-12">
+                    {% for item in query_set %}
+                        <div class="box">
+                            <div class="columns is-mobile">
+                                <div class="column is-narrow">
+                                    <figure class="image is-48x48" style="margin-top: 10px">
+                                        <img src="{{ item.image.url }}" alt="">
+                                    </figure>
+                                </div>
+                                <div class="column is-narrow">
+                                    <h1 class="is-size-5 has-text-weight-bold">
+                                        {{ item.name }}
+                                    </h1>
+                                    <div>
+                                    <span class="tag is-light my-tag" data-attribute-value="{{ item.university_tag }}">
+                                        {{ item.get_university_tag_display }}
+                                    </span>
+                                    </div>
+                                    <span class="is-size-7 has-text-grey-light pt-1 pb-1">
+                                        <span class="mr-3">院校代码：{{ item.university_id }}</span>
+                                    </span>
+                                </div>
+                                <div class="column is-mobile-narrow">
+                                    <a href="/university/{{ item.university_id }}/major/list/"
+                                       class="button is-primary is-light is-right"
+                                       style="float: right; margin-top: 5px">查看专业</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="" style="margin-bottom: 20px">
+                <ul class="pagination">
+                    {{ page_string }}
+                </ul>
+            </div>
+            {% block footer %}
+                <footer class="footer container">
+                    <div class=" has-text-centered">
+                        已经到底部啦
+                    </div>
+                </footer>
+            {% endblock %}
+        </div>
+
+    </section>
+{% endblock %}
+
+{% block js %}
+    <script>
+        const tags = document.querySelectorAll('.my-tag')
+        tags.forEach(row => {
+            const tag = row.getAttribute('data-attribute-value');
+            if (tag === '0') {
+                row.classList.add('is-info')
+            } else if (tag === '1') {
+                row.classList.add('is-primary')
+            } else {
+                row.classList.add('is-danger')
+            }
+        });
+    </script>
+{% endblock %}

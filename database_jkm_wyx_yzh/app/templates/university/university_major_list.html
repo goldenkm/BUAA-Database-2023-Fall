@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block css %}
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="tabs is-centered">
+        <ul id="category-list">
+            <li class="category" data-type="1"><a>哲学</a></li>
+            <li class="category" data-type="2"><a>经济学</a></li>
+            <li class="category" data-type="3"><a>法学</a></li>
+            <li class="category" data-type="4"><a>教育学</a></li>
+            <li class="category" data-type="5"><a>文学</a></li>
+            <li class="category" data-type="6"><a>历史学</a></li>
+            <li class="category" data-type="7"><a>理学</a></li>
+            <li class="category" data-type="8"><a>工学</a></li>
+            <li class="category" data-type="9"><a>农学</a></li>
+            <li class="category" data-type="10"><a>医学</a></li>
+            <li class="category" data-type="11"><a>军事学</a></li>
+            <li class="category" data-type="12"><a>管理学</a></li>
+            <li class="category" data-type="13"><a>艺术学</a></li>
+            <li class="category" data-type="14"><a>交叉学科</a></li>
+        </ul>
+    </div>
+    <div class="table-container is-center">
+        <table class="table is-hoverable" style="width: 1200px; margin-left: 30px">
+            <thead>
+            <tr>
+                <th><abbr title="专业名称">专业名称</abbr></th>
+                <th><abbr title="专业代码">专业代码</abbr></th>
+                <th><abbr title="操作">操作</abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for major in query_set %}
+                <tr class="major" data-type="{{ major.major_type }}">
+                    <td>{{ major.major_name }}</td>
+                    <td>{{ major.major_id }}</td>
+                    <td>
+                        <a href="/major/{{ university.university_id }}/{{ major.major_id }}/detail/"
+                           class="btn-primary">
+                            查看
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+        <div class="columns">
+            <div class="column is-12">
+                <div class="" style="margin-bottom: 20px">
+                    <ul class="pagination">
+                        {{ page_string }}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('.category');
+            rows.forEach(row => {
+                row.addEventListener('click', () => {
+                    rows.forEach(r => {
+                        r.classList.remove("is-active");
+                    });
+                    row.classList.add("is-active");
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#category-list li").click(function () {
+                let type = $(this).data('type');
+                $(".major").addClass('hidden');
+                $(".major[data-type='" + type + "']").removeClass('hidden');
+            });
+        });
+    </script>
+{% endblock %}

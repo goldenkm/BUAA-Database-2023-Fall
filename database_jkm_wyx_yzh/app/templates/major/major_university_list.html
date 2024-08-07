@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-12">
+                    {% for item in query_set %}
+                        <div class="box">
+                            <div class="columns is-mobile">
+                                <div class="column is-narrow">
+                                    <figure class="image is-48x48" style="margin-top: 10px">
+                                        <img src="{{ item.university_id.image.url }}" alt="">
+                                    </figure>
+                                </div>
+                                <div class="column is-narrow">
+                                    <h1 class="is-size-5 has-text-weight-bold">
+                                        {{ item.university_id.name }}
+                                    </h1>
+                                    <div>
+                                    <span class="tag is-light my-tag"
+                                          data-attribute-value="{{ item.university_id.university_tag }}">
+                                        {{ item.university_id.get_university_tag_display }}
+                                    </span>
+                                    </div>
+                                    <span class="is-size-7 has-text-grey-light pt-1 pb-1">
+                                        <span class="mr-3">院校代码：{{ item.university_id.university_id }}</span>
+                                    </span>
+                                </div>
+                                <div class="column is-narrow-mobile">
+                                    <a href="/major/{{ item.university_id.university_id }}/{{ major.major_id }}/detail/"
+                                       class="button is-primary is-light"
+                                       style="float: right; margin-top: 5px">查看详情</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="" style="margin-bottom: 20px">
+                <ul class="pagination">
+                    {{ page_string }}
+                </ul>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        const tags = document.querySelectorAll('.my-tag')
+        tags.forEach(row => {
+            const tag = row.getAttribute('data-attribute-value');
+            if (tag === '0') {
+                row.classList.add('is-info')
+            } else if (tag === '1') {
+                row.classList.add('is-primary')
+            } else {
+                row.classList.add('is-danger')
+            }
+        });
+    </script>
+{% endblock %}

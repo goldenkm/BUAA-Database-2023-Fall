@@ -1,0 +1,137 @@
+{% extends 'user/user_profile.html' %}
+
+{% load global_template %}
+
+{% block style %}
+
+    <style>
+        /* 弹窗样式 */
+        .modal-container {
+            top: 50%;
+            left: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            border-radius: 5%;
+            width: 600px;
+            height: 400px;
+            background-color: white;
+        }
+    </style>
+
+{% endblock %}
+
+{% block title %}
+    <li class="is-active"><a>我的帖子</a></li>
+{% endblock %}
+
+{% block profile_content %}
+    {% if posts %}
+        {% for post in posts %}
+            <div class="box">
+                <div style="display: inline-block; width: 650px">
+                    <h1 class="is-size-5 has-text-weight-bold">
+                        <a href="/post/{{ post.id }}/detail/">{{ post.title }}</a>
+                    </h1>
+                    <div class="is-size-7 has-text-grey-light pt-1 pb-1">
+                        <span>发布日期：{{ post.create_time }}</span>
+                    </div>
+                </div>
+                <button class="button is-right is-light is-info addTagButton" data-type="{{ post.id }}">
+                    设置关键词
+                </button>
+                <a href="/user/post/{{ post.id }}/delete/" class="button is-right is-light is-danger">删除</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="box">
+            还未发表过文章哦，<a href="/post/create/">快去发表一篇吧！</a>
+        </div>
+    {% endif %}
+
+    <div class="modal" id="addTagModal">
+        <div class="modal-background"></div>
+        <div class="modal-content modal-container" style="margin-top: 5px">
+            <!-- Any other Bulma elements you want -->
+            <div style="margin-top: 5px; margin-left: 10px">
+                <strong style="color: black; margin: auto">设置关键词</strong>
+            </div>
+            <div id="tagsList" class="container">
+                <ul>
+                    {% get_all_tags as tags %}
+                    {% for tag in tags %}
+                        <li class="tag is-primary">
+                            <label>
+                                <input type="checkbox" value="{{ tag.id }}">
+                            </label>{{ tag }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button id="saveTagsButton" type="submit" class="button is-link is-light">确定</button>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" id="closeButton"></button>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        const addTagModal = document.getElementById('addTagModal')
+        const addTagButtons = document.querySelectorAll('.addTagButton')
+        let postId;
+        addTagButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                addTagModal.style.display = 'block'
+                postId = $(this).data('type');
+            });
+        });
+        const closeButton = document.getElementById('closeButton')
+        closeButton.addEventListener('click', function () {
+            addTagModal.style.display = 'none'
+        });
+        {#    </script>#}
+        {#    <script>#}
+        const saveTagsButton = document.getElementById('saveTagsButton')
+        saveTagsButton.addEventListener('click', function () {
+            const selectedTags = [];
+            const checkboxes = document.querySelectorAll("#tagsList input[type='checkbox']:checked");
+            checkboxes.forEach(function (checkbox) {
+                selectedTags.push(checkbox.value);
+            });
+            addTagModal.style.display = 'none'
+            alert("选择的标签：" + selectedTags.join(","));
+            const url = '/post/save/tags/'
+            {#const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;#}
+            $.ajax({
+                url: url,
+                method: 'POST',
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")           //很关键！
+                },
+                data: {
+                    post_id: postId,
+                    selected_tags: selectedTags
+                },
+                success: function (response) {
+                    alert(response.message);
+                }
+            });
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+{% endblock %}
+

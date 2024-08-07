@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'css/bulma.css' %}">
+    <style>
+        .account {
+            width: 400px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            box-shadow: 5px 5px 20px #aaa;
+
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 50px;
+            padding: 20px 40px;
+        }
+
+        .account h2 {
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="account">
+    <h1 class="title">用户注册</h1>
+    <form action="/user/register/" method="post" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="field">
+                <label class="label">{{ field.label }}</label>
+                {{ field }}
+                <span style="color: red">{{ field.errors.0 }}</span>
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="button is-primary is-right">提 交</button>
+    </form>
+</div>
+</body>
+</html>

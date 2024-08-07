@@ -1,0 +1,205 @@
+{% extends 'post/post_base.html' %}
+
+{% load static %}
+{% block style %}
+    <style>
+        /* 弹窗样式 */
+        .modal-container {
+            top: 45%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+{% endblock %}
+
+{% block section %}
+    <div class="box">
+        <h1 class="title is-size-5">
+            {{ post.title }}
+        </h1>
+        <div class="is-size-7 pt-1 pb-1">
+            <img style="border-radius: 50%" src="{{ post.author.image.url }}" alt="" width="24px" height="24px">
+            <strong style="margin-left:10px; position: absolute">{{ post.author.user_name }}</strong>
+        </div>
+        <div class="content">
+            {{ post.content|safe }}
+        </div>
+        <div>
+            {% for tag in tags %}
+                <span class="tag is-link is-light">{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+        <div>
+            <br>
+            <button id="like-btn" class="icon"
+                    style="border: none; background-color: transparent; color: red; font-size: 16px">
+                {% if has_liked %}
+                    <span>
+                        <i id="heartIcon" class="fas fa-heart heart-solid"></i>
+                    </span>
+                {% else %}
+                    <span>
+                        <i id="heartIcon" class="far fa-heart heard-outline"></i>
+                    </span>
+                {% endif %}
+            </button>
+            <span id="like-count" style="font-size: 13px">{{ like_count }}</span>
+            <button id="showModalButton" data-toggle="modal" class="icon"
+                    style="border: none; background-color: transparent; font-size: 16px; margin-left: 10px; position: absolute">
+                <i class="fas fa-comment"></i>
+            </button>
+            <span class="is-size-7 has-text-grey-light" style="float: right">发布时间：{{ post.create_time }}</span>
+        </div>
+    </div>
+
+    <div class="box">
+        <div style="margin-bottom: 10px">
+            <strong>
+                最新评论
+            </strong>
+        </div>
+        {% if comments %}
+            {% for comment in comments %}
+                <article class="media">
+                    <figure class="media-left">
+                        <p class="image is-32x32">
+                            <img class="is-rounded" src="{{ comment.author.image.url }}" alt="">
+                        </p>
+                    </figure>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong>{{ comment.author.user_name }}</strong>
+                                <small class="has-text-grey-light">{{ comment.create_time }}</small>
+                                <br>
+                                {{ comment.content | safe }}
+                            </p>
+                        </div>
+                        <nav class="level is-mobile">
+                            <div class="level-left">
+                                <a class="level-item">
+                                    <span class="icon is-small"><i class="fas fa-reply"></i></span>
+                                </a>
+                                <a class="level-item">
+                                    <span class="icon is-small"><i class="fas fa-retweet"></i></span>
+                                </a>
+                                <a class="level-item">
+                                    <span class="icon is-small"><i class="fas fa-heart"></i></span>
+                                </a>
+                            </div>
+                        </nav>
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p>还没有评论</p>
+        {% endif %}
+    </div>
+
+    <!-- 弹窗代码 -->
+    <div class="modal" id="modalContainer">
+        <div class="modal-background" role="document">
+            <div class="modal-content modal-container">
+                <div>
+                    <p>
+                        <strong style="color: white">创建评论</strong>
+                    </p>
+                </div>
+                <!-- 添加评论表单 -->
+                <form id="commentForm" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ new_comment.media }}
+                        {{ new_comment.content }}
+                        <span style="color: red">{{ field.errors.0 }}</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交评论</button>
+                </form>
+            </div>
+            <button class="modal-close is-large" aria-label="close" id="closeButton"></button>
+        </div>
+    </div>
+
+    <div class="level">
+        <div class="level-left">
+            {% if prev %}
+                <span>上一篇：</span><a href="/post/{{ prev.id }}/detail/" class="level-item">{{ prev.title }}</a>
+            {% endif %}
+        </div>
+        <div class="level-right">
+            {% if after %}
+                <span>下一篇：</span><a href="/post/{{ after.id }}/detail/" class="level-item">{{ after.title }}</a>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+    <script>
+        // 评论弹窗功能
+        const showModalButton = document.getElementById('showModalButton');
+        const modalContainer = document.getElementById('modalContainer');
+        showModalButton.addEventListener('click', function () {
+            modalContainer.style.display = 'block';
+        });
+        // 关闭按钮点击事件
+        const closeButton = document.getElementById('closeButton');
+        closeButton.addEventListener('click', function () {
+            modalContainer.style.display = 'none';
+        });
+        // 提交评论按钮点击事件
+        const submitCommentButton = document.getElementById('submitCommentButton');
+        submitCommentButton.addEventListener('click', function () {
+            // 当评论表单被提交时，通过AJAX发送POST请求
+            $("#commentForm").submit(function (event) {
+                event.preventDefault();
+                const form = $(this);
+                $.ajax({
+                    type: "POST",
+                    url: form.attr("action"),
+                    data: form.serialize(),
+                    success: function (response) {
+                        // 这里可以根据后端的返回结果进行处理，比如刷新评论列表等
+                        console.log("评论提交成功");
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        // 点赞功能
+        document.getElementById("like-btn").addEventListener("click", function () {
+            const url = "/post/" + {{ post.id }} +"/detail/like/";
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;  // 替换成实际的CSRF token
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+            })
+                .then(response => response.text())
+                .then(message => {
+                    if (message === "success") {
+                        document.getElementById('heartIcon').classList.remove();  // 更新按钮文本
+                        document.getElementById('heartIcon').classList.add('fas', 'fa-heart', 'heart-solid');
+                        document.getElementById('like-count').innerText++;  // 更新点赞数
+                    } else {
+                        document.getElementById('heartIcon').classList.remove();  // 更新按钮文本
+                        document.getElementById('heartIcon').classList.add('far', 'fa-heart', 'heart-outline');
+                        document.getElementById('like-count').innerText--;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,26 @@
+{% extends 'post/post_base.html' %}
+
+{% block section %}
+    {% if posts %}
+        {% for post in posts %}
+            <div class="box">
+                <h1 class="is-size-5 has-text-weight-bold">
+                    <a href="/post/{{ post.id }}/detail/">{{ post.title }}</a>
+                </h1>
+                <div class="is-size-7 has-text-grey-light pt-1 pb-1">
+                    <span class="mr-3">作者：{{ post.author.user_name }}</span>
+                    <span>发布日期：{{ post.create_time }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="box">
+            文章不存在！
+        </div>
+    {% endif %}
+    <div class="clearfix">
+        <ul class="pagination">
+            {{ page_str }}
+        </ul>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% load global_template %}
+{% get_new_post as posts %}
+{% for post in posts %}
+    <ul>
+        <li>
+            <a href="/post{{ post.id }}/detail/">{{ post.title }}</a>
+        </li>
+    </ul>
+{% endfor %}
+

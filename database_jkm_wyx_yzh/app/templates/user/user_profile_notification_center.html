@@ -1,0 +1,85 @@
+{% extends 'user/user_profile.html' %}
+
+{% block title %}
+
+    <li class="is-active" id="commentButton"><a>评论</a></li>
+    <li id="likeButton"><a>点赞</a></li>
+
+{% endblock %}
+
+{% block profile_content %}
+
+    <div id="commentNotification">
+        {% for item in comment_notifications %}
+            <article class="media">
+                <figure class="media-left">
+                    <p class="image is-64x64">
+                        <img class="is-rounded" src="{{ item.comment_id.author.image.url }}" alt="">
+                    </p>
+                </figure>
+                <div class="media-content">
+                    <div class="content">
+                        <strong>{{ item.comment_id.author.user_name }}</strong><br>
+                        <small class="has-text-grey-light">{{ item.time }}</small><br>
+                        <p>{{ item.comment_id.content | safe }}</p>
+                        <div class="box">
+                            <h1 class="is-size-5 has-text-weight-bold">
+                                <a href="/post/{{ item.post_id.id }}/detail/">{{ item.post_id.title }}</a>
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    <div id="likeNotification" style="display: none">
+        {% for item in like_notifications %}
+            <article class="media">
+                <figure class="media-left">
+                    <p class="image is-64x64">
+                        <img class="is-rounded" src="{{ item.user.image.url }}" alt="">
+                    </p>
+                </figure>
+                <div class="media-content">
+                    <div class="content">
+                        <strong>{{ item.user.user_name }}</strong><br>
+                        <small class="has-text-grey-light">{{ item.time }}</small><br>
+                        <p>赞了你的帖子</p>
+                        <div class="box">
+                            <h1 class="is-size-5 has-text-weight-bold">
+                                <a href="/post/{{ item.post_id.id }}/detail/">{{ item.post_id.title }}</a>
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+    <script>
+        const commentButton = document.getElementById('commentButton')
+        const likeButton = document.getElementById('likeButton')
+        const commentNotification = document.getElementById('commentNotification')
+        const likeNotification = document.getElementById('likeNotification')
+        commentButton.addEventListener('click', () => {
+            commentButton.classList.remove('is-active')
+            likeButton.classList.remove('is-active')
+            commentButton.classList.add('is-active')
+            commentNotification.style.display = 'block'
+            likeNotification.style.display = 'none'
+        });
+        likeButton.addEventListener('click', () => {
+            commentButton.classList.remove('is-active')
+            likeButton.classList.remove('is-active')
+            likeButton.classList.add('is-active')
+            commentNotification.style.display = 'none'
+            likeNotification.style.display = 'block'
+        });
+    </script>
+
+{% endblock %}

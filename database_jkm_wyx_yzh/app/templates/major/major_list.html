@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div style="float: left; width: 300px; margin-left: 60px; margin-top: 20px">
+        <form action="" method="get">
+            {% csrf_token %}
+            <div class="field has-addons">
+                <div class="control is-expanded">
+                    <input type="search" class="input" name="keyword" placeholder="Search" value="{{ keyword }}">
+                </div>
+                <div class="control">
+                    <input class="button is-primary" type="submit" value="搜索">
+                </div>
+            </div>
+        </form>
+    </div>
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-12">
+                    {% for item in query_set %}
+                        <div class="box">
+                            <div style="display: inline-block; width:250px">
+                                <h1 class="is-size-5 has-text-weight-bold">
+                                    {{ item.major_name }}
+                                </h1>
+                                <span class="is-size-7 has-text-grey-light pt-1 pb-1">
+                                    <span class="mr-3">专业代码：{{ item.major_id }}</span>
+                                </span>
+                            </div>
+                            <a href="/major/{{ item.major_id }}/university/list/"
+                               class="button is-primary is-light" style="float: right; margin-top: 5px">开设院校</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="" style="margin-bottom: 20px">
+                <ul class="pagination">
+                    {{ page_string }}
+                </ul>
+            </div>
+            {% block footer %}
+                <footer class="footer container">
+                    <div class=" has-text-centered">
+                        已经到论坛底部啦
+                    </div>
+                </footer>
+            {% endblock %}
+        </div>
+
+    </section>
+{% endblock %}

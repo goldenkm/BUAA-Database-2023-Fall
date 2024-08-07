@@ -1,0 +1,27 @@
+{% extends 'post/post_base.html' %}
+
+{% block section %}
+
+    <p class="title is-3">发布新内容</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>
+                <input class="input" type="text" name="title" placeholder="帖子标题">
+            </label>
+        </div>
+        <div class="form-group" style="margin-top: 5px">
+            {{ form.media }}
+            {{ form.content }}
+            <span style="color: red">{{ form.content.errors.0 }}</span>
+        </div>
+        <div style="width: 400px; margin-top: 5px">
+            <button type="submit" class="button is-link is-right" name="draft-button">存为草稿
+            </button>
+            <button type="submit" class="button is-success is-right" name="submit-button" id="submitButton">
+                发布
+            </button>
+        </div>
+    </form>
+
+{% endblock %}

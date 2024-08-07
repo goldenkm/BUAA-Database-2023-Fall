@@ -1,0 +1,123 @@
+{% extends 'user/user_profile.html' %}
+{% load static %}
+
+{% block title %}
+    <li class="is-active"><a>编辑用户</a></li>
+{% endblock %}
+
+{% block profile_content %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="field">
+            <label class="label">用户名</label>
+            <div class="control has-icons-left has-icons-right">
+                <input class="input" type="text" name="user_name" value="{{ user.user_name }}">
+                <span class="icon is-small is-left">
+                <i class="fas fa-user"></i>
+            </span>
+                <span class="icon is-small is-right">
+                <i class="fas fa-check"></i>
+            </span>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">年龄</label>
+            <div class="control has-icons-left has-icons-right">
+                <input class="input" type="text" name="age" value="{{ user.age }}">
+                <span class="icon is-small is-left">
+                <i class="fas fa-user"></i>
+            </span>
+                <span class="icon is-small is-right">
+                <i class="fas fa-check"></i>
+            </span>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">本科专业</label>
+            <div class="control">
+                <div class="select">
+                    <select name="major">
+                        <option value="{{ user.major }}">{{ user.get_major_display }}</option>
+                        {% for item in user.major_choices %}
+                            <option value="{{ item.0 }}">{{ item.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">简介</label>
+            <div class="control">
+                <textarea class="textarea" name="introduction">{{ user.introduction }}</textarea>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">性别</label>
+            <div class="control">
+                <div class="select" name="gender">
+                    <select name="gender" id="">
+                        <option value="{{ user.gender }}">{{ user.get_gender_display }}</option>
+                        {% for item in user.gender_choices %}
+                            <option value="{{ item.0 }}">{{ item.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="file has-name">
+            <label class="file-label">
+                <input class="file-input" id="avatarInput" type="file" name="image">
+                <span class="file-cta">
+                <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                    上传头像
+                </span>
+            </span>
+                <figure class="image" style="width: 50px; height: 50px; margin-left: 10px">
+                    <img class="is-rounded" id="avatarPreview" src="
+                        {% if user.image %}
+                            {{ user.image.url }}
+                        {% else %}
+                            /static/img/default.jpg
+                        {% endif %}" alt="">
+                </figure>
+
+            </label>
+        </div>
+
+        <div class="field is-grouped" style="margin-top: 5px">
+            <div class="control">
+                <button type="submit" class="button is-link">Submit</button>
+            </div>
+            <div class="control">
+                <a class="button is-link is-light" href="/user/profile/">Cancel</a>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        const avatarInput = document.getElementById('avatarInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        avatarInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    avatarPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+{% endblock %}
